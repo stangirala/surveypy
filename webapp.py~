@@ -2,8 +2,6 @@ from flask import Flask, request, jsonify
 import mongocli, cross
 import json, urlparse
 
-from werkzeug.datastructures import ImmutableMultiDict
-
 app = Flask(__name__)
 
 from datetime import timedelta
@@ -59,9 +57,9 @@ def unknown():
 @crossdomain(origin='*')
 def pushsurvey():
     #print request.data
-    print request.form
-    #print imd['SurveyName']
-    #mongocli.pushsurvey(json.dumps(request.form))
+    data = json.loads(request.data)
+    print data.loads(request.data)
+    #mongocli.pushsurvey(json.dumps(urlparse.parse_qs(request.query_string)))
     #mongocli.pushsurvey(request.data)
     return 'crap'
 

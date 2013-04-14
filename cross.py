@@ -1,11 +1,3 @@
-from flask import Flask, request, jsonify
-import mongocli, cross
-import json, urlparse
-
-from werkzeug.datastructures import ImmutableMultiDict
-
-app = Flask(__name__)
-
 from datetime import timedelta
 from flask import make_response, request, current_app
 from functools import update_wrapper
@@ -50,20 +42,3 @@ def crossdomain(origin=None, methods=None, headers=None,
         f.provide_automatic_options = False
         return update_wrapper(wrapped_function, f)
     return decorator
-
-@app.route('/')
-def unknown():
-  return "Well, this is embarrring. You don't follow instructions."
-
-@app.route('/pushsurvey', methods=['POST'])
-@crossdomain(origin='*')
-def pushsurvey():
-    #print request.data
-    print request.form
-    #print imd['SurveyName']
-    #mongocli.pushsurvey(json.dumps(request.form))
-    #mongocli.pushsurvey(request.data)
-    return 'crap'
-
-if __name__ == '__main__':
-  app.run(debug=True)
