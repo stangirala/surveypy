@@ -2,6 +2,11 @@ from flask import Flask, request, jsonify
 import mongocli, cross
 import json, urlparse
 
+from werkzeug.datastructures import ImmutableMultiDict
+
+import pymongo
+import json
+
 app = Flask(__name__)
 
 from datetime import timedelta
@@ -49,6 +54,31 @@ def crossdomain(origin=None, methods=None, headers=None,
         return update_wrapper(wrapped_function, f)
     return decorator
 
+
+
+def pushsurvey(jsonstr):
+
+  # open pool connection
+  conn = pymongo.Connection()
+
+  # create db
+  db = conn.testdb
+
+  # check and make sure that the date object does not break the thing
+  '''jsonstr = '{"SurveyName":"blah", "Description":"this is not a survey", "Questions": [ { "ID":"1", "Content":"question1"}, { "ID":"2", "Content": "question2"}], "Creator":"Name", "Created On":"7/22/2008 12:11:04 PM", "Updated On":"7/22/2008 12:11:04 PM"}'''
+
+  obj = json.loads(jsonstr)
+
+  for i in list(db.test.find({"SurveyName":"blah"})):
+    db.test.remove(i)
+
+  db.test.insert(obj)
+
+  for i in list(db.test.find({"SurveyName":"blah"})):
+    print "QUESTION HERE\n\n"
+    print i['Description']
+    print "DONE\n\n"
+
 @app.route('/')
 def unknown():
   return "Well, this is embarrring. You don't follow instructions."
@@ -57,11 +87,17 @@ def unknown():
 @crossdomain(origin='*')
 def pushsurvey():
     #print request.data
-    data = json.loads(request.data)
-    print data.loads(request.data)
-    #mongocli.pushsurvey(json.dumps(urlparse.parse_qs(request.query_string)))
+    #print request.form
+    #print json.dumps(request.form)
+    d = json.loads(json.dumps(request.form))
+    printd(d)
+    #print imd['SurveyName']
+    #mongocli.pushsurvey(json.dumps(request.form))
     #mongocli.pushsurvey(request.data)
     return 'crap'
+
+def printd(d):
+  print d['SurveyName']
 
 if __name__ == '__main__':
   app.run(debug=True)

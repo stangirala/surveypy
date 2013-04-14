@@ -4,6 +4,8 @@ import json, urlparse
 
 from werkzeug.datastructures import ImmutableMultiDict
 
+import pymongo
+
 app = Flask(__name__)
 
 from datetime import timedelta
@@ -59,11 +61,18 @@ def unknown():
 @crossdomain(origin='*')
 def pushsurvey():
     #print request.data
-    print request.form
-    #print imd['SurveyName']
-    #mongocli.pushsurvey(json.dumps(request.form))
+    #print json.dumps(request.form)
+    d = json.loads(json.dumps(request.form))
+    print d
+    print d['SurveyName']
+    #mongocli.pushsurvey(d)
     #mongocli.pushsurvey(request.data)
     return 'crap'
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 if __name__ == '__main__':
   app.run(debug=True)
